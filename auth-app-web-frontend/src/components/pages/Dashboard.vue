@@ -13,6 +13,11 @@
             <aawf-upload-form 
             :form-submit="acc.uploadFile"/>
         </div>
+        <section class="image-wrapper">
+            <div v-for="d in acc.data">
+                <img class="image-container" :src="imageDataUrl(d.img)" alt="Image">
+            </div>
+        </section>
     </top-level-view>
 </template>
 
@@ -23,12 +28,18 @@
     import useAccount from '../../stores/account.ts'
 
     const acc = useAccount()
+
+    function imageDataUrl(imageBytes: Array<number>) {
+      const binaryData = new Uint8Array(imageBytes);
+      const blob = new Blob([binaryData]);
+      const dataUrl = URL.createObjectURL(blob);
+      return dataUrl;
+    }
 </script>
 
 <style scoped>
     .wrapper {
         display: flex;
-        height: 92vh;
     }
 
     h2 {
@@ -39,4 +50,20 @@
         display: flex;
         justify-content: center;
     }
+
+    .image-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .image-container {
+        object-fit: contain;
+        width: 40vw;
+        height: 40vh;
+        border: 2px solid black;
+        border-radius: 2px;
+        padding: 0;
+    }
+
 </style>

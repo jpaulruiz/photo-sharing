@@ -44,14 +44,9 @@ class PostController @Inject()(val controllerComponents: ControllerComponents,
             })
         }
         case None =>
-            // Future(Redirect(routes.AuthController.get()))
             post.get.map(t => {
                 Ok(Json.toJson(t.map(p => Post(p.id, p.userId, p.url, p.description, p.img, p.ext))))
             })
-            // user.get.map(t => {
-            //     Ok(Json.toJson(t.map(u => User(u.username, u.password))))
-            // })
-            // Future(Ok(JsObject(Seq("message" -> JsString("Logon first.")))))
     }
   }
 
@@ -65,28 +60,32 @@ class PostController @Inject()(val controllerComponents: ControllerComponents,
           val filesize = picture.fileSize
           val filetype = picture.contentType
           request.body.dataParts("desc").map( desc => {
-              post.create(
-                Post(1L,
-                  request.body.dataParts("userId").head,
-                  Some(filename.toString()),
-                  desc,
-                  Some(imageBytes),
-                  filetype)
-              )
+              post.get.map(t => {
+                  post.create(
+                    Post(t.size + 1L,
+                      request.body.dataParts("userId").head,
+                      Some(filename.toString()),
+                      desc,
+                      Some(imageBytes),
+                      filetype)
+                  )
+              })
             }
           )
         }
       Ok(JsObject(Seq("message" -> JsString("Post successfully created1."))))
     } else {
       request.body.dataParts("desc").map( desc => {
-        post.create(
-          Post(1L,
-            request.body.dataParts("userId").head,
-            None,
-            desc,
-            None,
-            None)
-        )
+        post.get.map(t => {
+          post.create(
+            Post(t.size + 1L,
+              request.body.dataParts("userId").head,
+              None,
+              desc,
+              None,
+              None)
+          )
+        })
       })
        Ok(JsObject(Seq("message" -> JsString("Post successfully created2."))))
     }
